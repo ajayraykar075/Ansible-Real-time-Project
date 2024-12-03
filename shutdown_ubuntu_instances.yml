@@ -1,0 +1,12 @@
+---
+- name: Shutdown Ubuntu instances
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+  tasks:
+    - name: Shutdown Ubuntu instances based on the condition
+      ansible.builtin.command:
+        cmd: shutdown -h now
+      when: ansible_facts.os_family == "Debian"
+      delegate_to: "{{ item.public_ip }}"
+      loop: "{{ ec2_instances.instances }}"
