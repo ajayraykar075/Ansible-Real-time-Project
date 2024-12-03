@@ -1,0 +1,31 @@
+---
+- name: Create EC2 instances on AWS
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    aws_access_key: "your_aws_access_key"
+    aws_secret_key: "your_aws_secret_key"
+    region: "us-east-1"
+    instance_type: "t2.micro"
+    key_name: "your_key_pair_name"
+    ami_ubuntu: "ami-xxxxxxxxxxxxxxxxx"  # Ubuntu AMI ID
+    ami_centos: "ami-yyyyyyyyyyyyyyyyy"  # CentOS AMI ID
+
+  tasks:
+    - name: Create EC2 instances with different distributions
+      ec2_instance:
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ item.image_id }}"
+        region: "{{ region }}"
+        wait: yes
+        group: "default"
+        count: 1
+        instance_tags:
+          Name: "{{ item.name }}"
+      loop:
+        - { name: "Ubuntu-Instance-1", image_id: "{{ ami_ubuntu }}" }
+        - { name: "Ubuntu-Instance-2", image_id: "{{ ami_ubuntu }}" }
+        - { name: "CentOS-Instance", image_id: "{{ ami_centos }}" }
+      register: ec2_instances
